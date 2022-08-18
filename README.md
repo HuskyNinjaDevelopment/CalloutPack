@@ -1,16 +1,18 @@
 # <p align='center'>Callout Pack</p>
 ## Description
-The <strong>Callout Pack</strong> currently contains 10 callouts.<br />
+The <strong>Callout Pack</strong> currently contains 12 callouts.<br />
 - Abandonded Vehicle<br />
 - Bar Fight<br />
 - Dead Animal in Road<br />
 - Domestic Disturbance<br />
-- Pedestrian Struck by Traffic<br />
 - Public Intoxication<br />
 - Soliciting<br />
 - Stolen Vehicle<br />
 - Tow Truck Altercation<br />
 - Trespassing<br />
+- Dead Body<br />
+- Homless Person in Subway<br />
+- Noise Complaint<br />
 
 ## Installation
 #### Option 1: Build it yourself
