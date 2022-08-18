@@ -54,6 +54,8 @@ namespace CalloutPack
 
             victim = await SpawnPed(RandomUtils.GetRandomPed(), calloutLocation);
             victim.Kill();
+            victim.AttachBlip();
+            victim.AttachedBlip.Color = BlipColor.Blue;
 
             await Task.FromResult(0);
         }

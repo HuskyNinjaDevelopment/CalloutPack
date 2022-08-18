@@ -50,7 +50,7 @@ namespace CalloutPack
         };
 
         public Ped prostitute, driver;
-        public PedData prostituteData;
+        public PedData prostituteData, driverData;
 
         public Vehicle veh;
         public float heading;
@@ -65,15 +65,16 @@ namespace CalloutPack
             prostituteLocation = areas.SelectRandom();
             rollChance = rng.Next(0, 101);
 
-            if(rollChance >= 60)
+            /*if(rollChance >= 50)
             {
                 undercoverMission = true;
             }
             
-            if(rollChance <= 35)
+            if(rollChance <= 40)
             {
                 followMission = true;
-            }
+            }*/
+            undercoverMission = true;
 
             //Find road spot on road
             bool foundPos = API.GetNthClosestVehicleNodeWithHeading(prostituteLocation.X, prostituteLocation.Y, prostituteLocation.Z, 3, ref vehicleLocation, ref heading, ref unk1, 9, 3.0f, 2.5f);
@@ -213,9 +214,10 @@ namespace CalloutPack
                 ShowDialog("~r~Driver~s~: Oh shit! It's the cops! What are we going to do?!", 6500, 1f);
 
                 await BaseScript.Delay(6500);
-                ShowDialog("~b~Undercover Cop~s~: You're under arrest for the solicitation of a prostitute! Exit the vehicle and put your hands in the air!", 6500, 1f);
-
-                await BaseScript.Delay(2500);
+                ShowDialog("~b~Undercover Cop~s~: You're under arrest for the solicitation of a prostitute! Pull the vehicle over!", 6500, 1f);
+                Vector3 offset = veh.Position + (veh.ForwardVector * 10f);
+                driver.Task.ParkVehicle(veh, offset, veh.Heading);
+                while(!veh.IsStopped) { await BaseScript.Delay(10); }
                 driver.Task.LeaveVehicle();
                 prostitute.Task.LeaveVehicle();
                 await BaseScript.Delay(500);
@@ -240,6 +242,7 @@ namespace CalloutPack
             {
                 veh = await SpawnVehicle(RandomUtils.GetVehicleHashesForClass(VehicleClass.Coupes).SelectRandom(), vehicleLocation, heading);
                 driver = await SpawnPed(RandomUtils.GetRandomPed(), veh.Position);
+                driverData = await driver.GetData();
                 driver.Task.WarpIntoVehicle(veh, VehicleSeat.Driver);
                 driver.AttachBlip();
                 driver.RelationshipGroup = (RelationshipGroup)"AMBIENT_GANG_WEICHENG";
@@ -370,6 +373,65 @@ namespace CalloutPack
 
         public void ProstituteQuestions()
         {
+            if(undercoverMission)
+            {
+                PedQuestion q1 = new PedQuestion();
+                q1.Question = "What can I do for you ~b~Officer~s~?";
+                q1.Answers = new List<string>()
+                {
+                    "I'm going to need you to bring this guy down to the station.",
+                    "Bring this guy down to the station.",
+                    "This guy needs to be processed at the station. Can you bring him down?",
+                    "Can you take this guy down to the station?"
+                };
+
+                PedQuestion[] questions = new PedQuestion[] { q1 };
+                AddPedQuestions(prostitute, questions);
+            }
+
+            if(followMission)
+            {
+                PedQuestion q1 = new PedQuestion();
+                q1.Question = String.Format("How do you know this {0}?", driverData.Gender == Gender.Male ? "man" : "woman");
+                q1.Answers = new List<string>()
+                {
+                    String.Format("{0} just gives me a ride every now and then.", driverData.Gender == Gender.Male ? "He" : "She"),
+                    "We met through a friend.",
+                    String.Format("I'm {0} massage therapist.", driverData.Gender == Gender.Male ? "his" : "her"),
+                    String.Format("{0} is a freind of mine, just giving me a ride home.", driverData.Gender == Gender.Male ? "He" : "She")
+                };
+
+                PedQuestion q2 = new PedQuestion();
+                q2.Question = String.Format("How long have your known {0}?", driverData.Gender == Gender.Male ? "him" : "her");
+                q2.Answers = new List<string>()
+                {
+                    String.Format("About {0} months.", rng.Next(2,10))
+                };
+
+                PedQuestion q3 = new PedQuestion();
+                q3.Question = "Can you tell me their name?";
+                q3.Answers = new List<string>()
+                {
+                    "I'm not sure. We don't know each other that well.",
+                    $"It's {driverData.FirstName}.",
+                    String.Format("I think it's {0}.", driverData.Gender == Gender.Male ? "Dan" : "Donna"),
+                    "I forget... I have a really bad memory."
+                };
+
+                PedQuestion q4 = new PedQuestion();
+                q4.Question = "~y~Attempt Confession~s~";
+                q4.Answers = new List<string>()
+                {
+                    "~y~*Suspect denies all accusations*",
+                    "I want a lawyer.",
+                    "Fuck off pig...",
+                    "~y~*Suspect confessses to being a prostitute*"
+                };
+
+                PedQuestion[] questions = new PedQuestion[] { q1, q2, q3, q4 };
+                AddPedQuestions(prostitute, questions);
+            }
+
             if (!undercoverMission && !followMission)
             {
                 PedQuestion q1 = new PedQuestion();
