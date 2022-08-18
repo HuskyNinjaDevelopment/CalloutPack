@@ -65,7 +65,7 @@ namespace CalloutPack
             prostituteLocation = areas.SelectRandom();
             rollChance = rng.Next(0, 101);
 
-            /*if(rollChance >= 50)
+            if(rollChance >= 50)
             {
                 undercoverMission = true;
             }
@@ -73,8 +73,7 @@ namespace CalloutPack
             if(rollChance <= 40)
             {
                 followMission = true;
-            }*/
-            undercoverMission = true;
+            }
 
             //Find road spot on road
             bool foundPos = API.GetNthClosestVehicleNodeWithHeading(prostituteLocation.X, prostituteLocation.Y, prostituteLocation.Z, 3, ref vehicleLocation, ref heading, ref unk1, 9, 3.0f, 2.5f);
