@@ -53,8 +53,10 @@
     <Compile Include="AbandondedVehicle.cs" />
     <Compile Include="BarFight.cs" />
     <Compile Include="DeadAnimalInRoad.cs" />
+    <Compile Include="DeadBody.cs" />
     <Compile Include="DomesticDisturbance.cs" />
-    <Compile Include="PedestrianStruckByTraffic.cs" />
+    <Compile Include="HomlessPersonInSubway.cs" />
+    <Compile Include="NoiseComplaint.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PublicIntoxication.cs" />
     <Compile Include="Soliciting.cs" />
