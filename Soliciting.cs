@@ -384,8 +384,7 @@ namespace CalloutPack
                     "Can you take this guy down to the station?"
                 };
 
-                PedQuestion[] questions = new PedQuestion[] { q1 };
-                AddPedQuestions(prostitute, questions);
+                AddPedQuestion(prostitute, q1);
             }
 
             if(followMission)
