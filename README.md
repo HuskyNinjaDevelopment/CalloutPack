@@ -17,7 +17,8 @@ The <strong>Callout Pack</strong> currently contains 12 callouts.<br />
 ## Installation
 #### Option 1: Build it yourself
 Download the project from Releases, open it in Visual Studio. Build the project to create the CalloutPack.net.dll file, which should be in the 'bin\Debug' folder in the project solution. Place that file in your callout folder at 'fivepd\callouts\' .
-#### Option 2: Download the callout at GPM
+#### Option 2: Download the callout pack at GPM
+https://gtapolicemods.com/files/file/4250-huskys-callout-pack/
 
 ## Updates
 I plan to keep this callout updated as new versions of FivePD are released. And as I make more callouts.
