@@ -14,17 +14,28 @@ namespace CalloutPack
     internal class BarFight : Callout
     {
         public readonly Random rng = new Random();
+
         public List<Vector3> barLocations = new List<Vector3>()
         {
             new Vector3(498.53f, -1539f, 29.27f),
             new Vector3(-554.8f, 285.28f, 82.18f),
             new Vector3(-1392.61f, -587.24f, 30.25f),
-            new Vector3(-1183.87f, -1527.96f, 4.38f),
             new Vector3(1215.87f, -413.62f, 67.82f),
             new Vector3(252.23f, -1012.42f, 29.27f),
             new Vector3(226.25f, 302.41f, 105.53f),
             new Vector3(2186.15f, -394.55f, 13.43f)
         };
+        public List<Vector3> juiceBars = new List<Vector3>()
+        {
+            new Vector3(-1183.87f, -1527.96f, 4.38f),
+            new Vector3(-1246.12f, -742.74f, 20.4f),
+            new Vector3(-1237.15f, -292.33f, 37.57f),
+            new Vector3(248.02f, -1028.61f, 29.26f),
+            new Vector3(-1185.46f, -1248.10f, 6.99f),
+            new Vector3(1195.51f, -494.69f, 65.55f)
+        };
+        public Vector3 barLocation;
+
         public List<String> juiceNames = new List<string>()
         {
             "Cabbage Digestive Juice",
@@ -38,6 +49,7 @@ namespace CalloutPack
             PedHash.Musclbeac01AMY,
             PedHash.Musclbeac02AMY,
         };
+        public string jName;
 
         public List<string> clipSets = new List<string>()
         {
@@ -46,22 +58,30 @@ namespace CalloutPack
             "MOVE_M@DRUNK@SLIGHTLYDRUNK",
             "MOVE_M@DRUNK@VERYDRUNK"
         };
+        public string clipset;
 
-        public Vector3 barLocation;
         public Ped fighter1, fighter2;
         public PedData fighter2Data;
-        public string jName;
-        public string clipset;
+        public bool isJuiceBar = false;
+
         public BarFight()
         {
-            barLocation = barLocations.SelectRandom();
-            jName = juiceNames.SelectRandom();
-            clipset = clipSets.SelectRandom();
+            if(rng.Next(0,100) >= 85)
+            {
+                isJuiceBar = true;
+                barLocation = juiceBars.SelectRandom();
+                jName = juiceNames.SelectRandom();
+            }
+            else
+            {
+                barLocation = barLocations.SelectRandom();
+                clipset = clipSets.SelectRandom();
+            }
 
             InitInfo(barLocation);
             ShortName = "Bar Fight";
             ResponseCode = 2;
-            StartDistance = 175f;
+            StartDistance = 125f;
             CalloutDescription = $"A Bar Fight has been reported in the {World.GetZoneLocalizedName(barLocation)} area.";
         }
 
@@ -77,27 +97,22 @@ namespace CalloutPack
         {
             base.OnStart(closest);
 
-            API.RequestAnimSet(clipset);
-            while (!API.HasAnimSetLoaded(clipset)) { await BaseScript.Delay(50); }
-
-            if (barLocation == new Vector3(-1183.87f, -1527.96f, 4.38f))
+            if (isJuiceBar)
             {
                 fighter1 = await SpawnPed(jPeds.SelectRandom(), barLocation.Around(0.5f));
-            }
-            else
-            {
-                fighter1 = await SpawnPed(RandomUtils.GetRandomPed(), barLocation.Around(0.5f));
-                API.SetPedMovementClipset(fighter1.Handle, clipset, 0.2f);
-            }
-
-            if (barLocation == new Vector3(-1183.87f, -1527.96f, 4.38f))
-            {
                 fighter2 = await SpawnPed(jPeds.SelectRandom(), barLocation.Around(0.5f));
             }
             else
             {
+                API.RequestAnimSet(clipset);
+                while (!API.HasAnimSetLoaded(clipset)) { await BaseScript.Delay(50); }
+
+                fighter1 = await SpawnPed(RandomUtils.GetRandomPed(), barLocation.Around(0.5f));
+                API.SetPedMovementClipset(fighter1.Handle, clipset, 0.2f);
+
                 fighter2 = await SpawnPed(RandomUtils.GetRandomPed(), barLocation.Around(0.5f));
                 API.SetPedMovementClipset(fighter2.Handle, clipset, 0.2f);
+
                 fighter2Data = await fighter2.GetData();
                 double bac = (double)rng.Next(10, 20) / 100;
                 fighter2Data.BloodAlcoholLevel = bac;
@@ -107,13 +122,16 @@ namespace CalloutPack
             fighter1.Task.LookAt(fighter2);
             fighter2.Task.LookAt(fighter1);
 
-            while(World.GetDistance(Game.PlayerPed.Position, fighter1.Position) > 25f) { await BaseScript.Delay(50); }
+            while(World.GetDistance(Game.PlayerPed.Position, fighter1.Position) > 45f) { await BaseScript.Delay(50); }
 
-            if(barLocation == new Vector3(-1183.87f, -1527.96f, 4.38f)) { ShowDialog($"You made me ~y~spill~s~ my ~r~{jName}~s~! I'm gonna fuck you up!", 12500, 20f); }
+            if(isJuiceBar) { ShowDialog($"You made me ~y~spill~s~ my ~r~{jName}~s~! I'm gonna fuck you up!", 12500, 20f); }
 
             fighter1.Task.FightAgainst(fighter2);
             fighter2.Task.FightAgainst(fighter1);
-            
+
+            fighter1.AttachBlip();
+            fighter2.AttachBlip();
+
             await Task.FromResult(0);
         }
 
@@ -127,7 +145,7 @@ namespace CalloutPack
             q4 = new PedQuestion();
 
             //Juice Bar
-            if(barLocation == new Vector3(-1183.87f, -1527.96f, 4.38f))
+            if(isJuiceBar)
             {
                 q1.Question = "What's going on here?";
                 q1.Answers = new List<string>()
@@ -181,7 +199,7 @@ namespace CalloutPack
             q2 = new PedQuestion();
 
             //Juice Bar
-            if (barLocation == new Vector3(-1183.87f, -1527.96f, 4.38f))
+            if(isJuiceBar)
             {
                 q1.Question = "What's going on here?";
                 q1.Answers = new List<string>()

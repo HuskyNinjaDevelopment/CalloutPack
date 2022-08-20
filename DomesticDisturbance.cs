@@ -1,6 +1,8 @@
 ﻿using CitizenFX.Core;
+using CitizenFX.Core.Native;
 using FivePD.API;
 using FivePD.API.Utils;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -35,11 +37,41 @@ namespace CalloutPack
             new Vector3(-578.92f, 405.07f, 100.66f),
             new Vector3(-533.25f, 456.98f, 103.19f)
         };
+        public Vector3 calloutCoords;
 
         public Ped victim, suspect;
         public PedData vicData, susData;
 
-        public Vector3 calloutCoords;
+        public readonly Random rng = new Random();
+
+        public List<PedHash> victims = new List<PedHash>()
+        {
+            PedHash.Eastsa03AFY,
+            PedHash.Genhot01AFY,
+            PedHash.Hipster01AFY,
+            PedHash.Indian01AFY,
+            PedHash.Rurmeth01AFY,
+            PedHash.Vinewood02AFY,
+            PedHash.Vinewood04AFY,
+            PedHash.Vinewood03AFY,
+            PedHash.Vinewood01AFY,
+        };
+        public List<PedHash> suspects = new List<PedHash>()
+        {
+            PedHash.Bevhills02AMM,
+            PedHash.Eastsa02AMM,
+            PedHash.MexCntry01AMM,
+            PedHash.Rurmeth01AMM,
+            PedHash.Salton03AMM,
+            PedHash.Skidrow01AMM,
+            PedHash.Beachvesp02AMY,
+            PedHash.Eastsa02AMY,
+            PedHash.Genstreet01AMY,
+            PedHash.Genstreet02AMY,
+            PedHash.Ktown02AMY,
+            PedHash.Polynesian01AMY,
+            PedHash.Salton01AMY,
+        };
 
         public DomesticDisturbance()
         {
@@ -62,13 +94,63 @@ namespace CalloutPack
         public override async void OnStart(Ped closest)
         {
             base.OnStart(closest);
-            victim = await SpawnPed(RandomUtils.GetRandomPed(), calloutCoords.Around(0.5f));
+            victim = await SpawnPed(victims.SelectRandom(), calloutCoords.Around(0.5f));
             vicData = await victim.GetData();
 
-            suspect = await SpawnPed(RandomUtils.GetRandomPed(), calloutCoords.Around(0.5f));
+            victim.AlwaysKeepTask = true;
+            victim.BlockPermanentEvents = true;
+
+            victim.AttachBlip();
+            victim.AttachedBlip.Color = BlipColor.Blue;
+
+            Vector3 offset = victim.Position + (victim.ForwardVector * 1.5f);
+            float heading = 0f;
+
+            if (victim.Heading > 180f)
+            {
+                heading = victim.Heading - 180f;
+            }
+            else
+            {
+                heading = victim.Heading + 180f;
+            }
+
+            suspect = await SpawnPed(suspects.SelectRandom(), offset, heading);
             susData = await suspect.GetData();
+            suspect.AttachBlip();
+
+            VictimQuestions();
+            SuspectQuestions();
+
+            while (World.GetDistance(victim.Position, Game.PlayerPed.Position) > 30f) { await BaseScript.Delay(50); }
+
+            API.RequestAnimDict("misscarsteal4@actor");
+            while (API.HasAnimDictLoaded("misscarsteal4@actor")) { await BaseScript.Delay(10); }
+
+            API.RequestAnimDict("rcmme_tracey1");
+            while (API.HasAnimDictLoaded("rcmme_tracey1")) { await BaseScript.Delay(10); }
+
+            suspect.Task.ClearAllImmediately();
+
+            suspect.Task.PlayAnimation("misscarsteal4@actor", "actor_berating_loop", 8.0f, -1, AnimationFlags.Loop);
+            victim.Task.PlayAnimation("rcmme_tracey1", "nervous_loop", 8.0f, -1, AnimationFlags.Loop);
 
             await Task.FromResult(0);
+        }
+
+        public override void OnCancelBefore()
+        {
+            base.OnCancelBefore();
+
+            if(!suspect.IsCuffed)
+            {
+                suspect.Task.WanderAround();
+            }
+
+            if(!victim.IsCuffed)
+            {
+                victim.Task.WanderAround();
+            }
         }
 
         public void VictimQuestions()
@@ -83,7 +165,7 @@ namespace CalloutPack
             };
 
             PedQuestion q2 = new PedQuestion();
-            q2.Question = $"*Examine {vicData.LastName} for signs of abuse*";
+            q2.Question = $"~y~*Examine {vicData.LastName} for signs of abuse*";
             q2.Answers = new List<string>()
             {
                 "~y~Examination~s~: Bruising to upper left area of face",
@@ -121,6 +203,9 @@ namespace CalloutPack
                 "~y~*With tears in their eyes they nod at you*~s~",
                 string.Format("~y~*{0} quickly and nervously walks away*~s~", vicData.Gender == Gender.Male ? "He" : "She")
             };
+
+            PedQuestion[] questions = new PedQuestion[] { q1, q2, q3, q4, q5 };
+            AddPedQuestions(victim, questions);
         }
 
         public void SuspectQuestions()
@@ -170,6 +255,9 @@ namespace CalloutPack
                 "Cool...",
                 $"~y~*{susData.LastName} shows signs of relief*~s~"
             };
+
+            PedQuestion[] questions = new PedQuestion[] { q1, q2, q3, q4, q5 };
+            AddPedQuestions(suspect, questions);
         }
     }
 }

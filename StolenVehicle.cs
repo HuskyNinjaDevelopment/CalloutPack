@@ -38,11 +38,13 @@ namespace CalloutPack
                 new Vector3(1184.65f, -1535.76f, 35.07f), //Hospital PG
         };
         public Vector3 victimCoords;
+
         public Vector3 vehicleCoords;
         public float heading;
 
         private Ped victim, suspect;
-        private PedData victimData, suspectData;
+        private PedData victimData;
+
         public Vehicle veh;
         public VehicleData vehData;
 
@@ -91,7 +93,6 @@ namespace CalloutPack
             veh = await SpawnVehicle(RandomUtils.GetRandomVehicle(VehicleClass.Compacts), vehicleCoords, heading);
             vehData = await veh.GetData();
             suspect = await SpawnPed(RandomUtils.GetRandomPed(), vehicleCoords);
-            suspectData = await suspect.GetData();
             suspect.BlockPermanentEvents = true;
             suspect.AlwaysKeepTask = true;
             suspect.Weapons.RemoveAll();
@@ -113,8 +114,8 @@ namespace CalloutPack
 
             while(World.GetDistance(victim.Position, Game.PlayerPed.Position) > 2f) { await BaseScript.Delay(50); }
             startTimer = API.GetGameTimer();
-            while(API.GetGameTimer() - startTimer < 15000) { await BaseScript.Delay(500); }
 
+            while(API.GetGameTimer() - startTimer < 12000) { await BaseScript.Delay(250); }
             ShowNetworkedNotification("~r~Be advised~s~: BOLO was put out for the victims vehicle. ~y~Search~s~ the area.", "CHAR_CALL911", "CHAR_CALL911", "Dispatch", "~y~Callout Update~s~", 1f);
 
             Marker.Delete();
@@ -183,15 +184,15 @@ namespace CalloutPack
             {
                 "Yeah, some jerk stole my car!",
                 "Yeah, my car was stolen.",
-                "I did. Some one stole my car.",
-                "Yep,  appears my car has been stolen."
+                "I did. Someone stole my car.",
+                "Yep, appears my car has been stolen."
             };
 
             PedQuestion q2 = new PedQuestion();
             q2.Question = "Can you describe the vehicle please.";
             q2.Answers = new List<string>()
             {
-                $"It's a ~y~{vehData.Color}~s~ ~g~{vehData.Name}~s~ with the license plate ~b~{vehData.LicensePlate}~s~. I didn’t see who took it though."
+                $"It's a ~y~{vehData.Color}~s~ ~g~{vehData.Name}~s~ with the license plate ~b~{vehData.LicensePlate}~s~. I did not see who took it though."
             };
 
             PedQuestion q3 = new PedQuestion();

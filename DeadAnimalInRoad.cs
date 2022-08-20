@@ -60,6 +60,10 @@ namespace CalloutPack
             animal = await SpawnPed(animalHash, calloutCoords);
             animal.Kill();
 
+            animal.AttachBlip();
+            animal.AttachedBlip.Color = BlipColor.Green;
+            animal.AttachedBlip.Sprite = (BlipSprite)141;
+
             await Task.FromResult(0);
         }
     }

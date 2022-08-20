@@ -75,6 +75,7 @@ namespace CalloutPack
 
             trespasser = await SpawnPed(RandomUtils.GetRandomPed(), locationData.trespasserCoords);
             trespasser.Task.WanderAround(locationData.trespasserCoords, 15f);
+            trespasser.AttachBlip();
 
             API.RequestAnimDict("amb@code_human_police_investigate@idle_a");
             while(!Function.Call<bool>(Hash.REQUEST_ANIM_DICT, "amb@code_human_police_investigate@idle_a"))

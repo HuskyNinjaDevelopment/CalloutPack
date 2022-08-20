@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace CalloutPack
 {
-    [CalloutProperties("Homless Person In Subway", "HuskyNinja", "v1.0")]
+    [CalloutProperties("Homeless Person In Subway", "HuskyNinja", "v1.0")]
     internal class HomlessPersonInSubway : Callout
     {
         public readonly Random rng = new Random();
@@ -136,7 +136,7 @@ namespace CalloutPack
             clipset = clipSets.SelectRandom();
 
             InitInfo(calloutLocation.blipCoords);
-            ShortName = "Homless Person in Subway";
+            ShortName = "Homeless Person in Subway";
             StartDistance = 150f;
             ResponseCode = 1;
             CalloutDescription = $"A Homeless Person is refusing to leave the Subway Station in {World.GetZoneLocalizedName(calloutLocation.blipCoords)}.";

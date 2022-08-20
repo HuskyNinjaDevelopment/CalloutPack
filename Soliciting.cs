@@ -128,8 +128,6 @@ namespace CalloutPack
             prostitute.BlockPermanentEvents = true;
             prostitute.AlwaysKeepTask = true;
 
-            ProstituteQuestions();
-
             if(rng.Next(0,101) >= 50)
             {
                 API.TaskStartScenarioInPlace(prostitute.Handle, "WORLD_HUMAN_PROSTITUTE_HIGH_CLASS", -1, true);
@@ -153,6 +151,7 @@ namespace CalloutPack
                 driver.RelationshipGroup = (RelationshipGroup)"AMBIENT_GANG_WEICHENG";
                 prostitute.RelationshipGroup = (RelationshipGroup)"AMBIENT_GANG_WEICHENG";
 
+                ProstituteQuestions();
                 DriverQuestions();
 
                 while (World.GetDistance(Game.PlayerPed.Position, prostitute.Position) > 65f) { await BaseScript.Delay(50); }
@@ -239,6 +238,7 @@ namespace CalloutPack
 
             if(followMission)
             {
+                
                 veh = await SpawnVehicle(RandomUtils.GetVehicleHashesForClass(VehicleClass.Coupes).SelectRandom(), vehicleLocation, heading);
                 driver = await SpawnPed(RandomUtils.GetRandomPed(), veh.Position);
                 driverData = await driver.GetData();
@@ -247,6 +247,7 @@ namespace CalloutPack
                 driver.RelationshipGroup = (RelationshipGroup)"AMBIENT_GANG_WEICHENG";
                 prostitute.RelationshipGroup = (RelationshipGroup)"AMBIENT_GANG_WEICHENG";
 
+                ProstituteQuestions();
                 DriverQuestions();
 
                 while (World.GetDistance(Game.PlayerPed.Position, prostitute.Position) > 55f) { await BaseScript.Delay(50); }
@@ -280,6 +281,11 @@ namespace CalloutPack
                 while (!prostitute.IsInVehicle()) { await BaseScript.Delay(50); }
 
                 driver.Task.CruiseWithVehicle(veh, 10f, 395);
+            }
+
+            if(!followMission && !undercoverMission)
+            {
+                ProstituteQuestions();
             }
 
             await BaseScript.Delay(0);
