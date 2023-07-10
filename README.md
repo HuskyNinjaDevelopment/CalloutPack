@@ -11,7 +11,7 @@ The <strong>Callout Pack</strong> currently contains 12 callouts.<br />
 - Tow Truck Altercation<br />
 - Trespassing<br />
 - Dead Body<br />
-- Homless Person in Subway<br />
+- Homeless Person in Subway<br />
 - Noise Complaint<br />
 
 ## Installation
