@@ -1,7 +1,7 @@
 # <p align='center'>Callout Pack</p>
 ## Description
 The <strong>Callout Pack</strong> currently contains 12 callouts.<br />
-- Abandonded Vehicle<br />
+- Abandoned Vehicle<br />
 - Bar Fight<br />
 - Dead Animal in Road<br />
 - Domestic Disturbance<br />
