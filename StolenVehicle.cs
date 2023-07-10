@@ -200,7 +200,7 @@ namespace CalloutPack
             q3.Answers = new List<string>()
             {
                 $"{mintues} minutes or so.",
-                $"Not long. I only ran up the street quick. Maybe {mintues} minutes.",
+                $"Not long. I only ran up the street quickly. Maybe {mintues} minutes.",
                 "What, do you think I just sit here and count the minutes since I parked?",
                 "Honestly I’m not sure. Not long at all."
             };

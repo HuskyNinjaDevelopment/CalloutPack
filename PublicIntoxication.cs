@@ -45,8 +45,6 @@ namespace CalloutPack
             barLocation = barLocations.SelectRandom();
             clipset = clipSets.SelectRandom();
 
-            API.GetSafeCoordForPed(barLocation.X, barLocation.Y, barLocation.Z, true, ref barLocation, 16);
-
             InitInfo(barLocation);
             ShortName = "Public Intoxication";
             ResponseCode = 2;
@@ -85,7 +83,7 @@ namespace CalloutPack
             while (!API.HasAnimSetLoaded(clipset)) { await BaseScript.Delay(50); }
             API.SetPedMovementClipset(drunk.Handle, clipset, 0.2f);
 
-            drunk.Task.WanderAround();
+            drunk.Task.WanderAround(drunk.Position, 25f);
 
             await Task.FromResult(0);
         }
@@ -128,7 +126,7 @@ namespace CalloutPack
                 q4.Question = "Have you had anything to drink today?";
                 q4.Answers = new List<string>()
                 {
-                    "I don’t believe you can ask me that, thanks to Obama",
+                    "I don’t believe you can ask me that, thanks to Obama.",
                     "You mean my medicine? Yeah plenty. ~y~*hiccups*",
                     "Nope, not a drop.",
                     "I may have had a few sips from the bottle."
