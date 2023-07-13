@@ -39,7 +39,7 @@ namespace CalloutPack
         };
         public Vector3 calloutCoords;
 
-        public Ped victim, suspect;
+        public Ped victim, suspect = null;
         public PedData vicData, susData;
 
         public readonly Random rng = new Random();
@@ -142,12 +142,12 @@ namespace CalloutPack
         {
             base.OnCancelBefore();
 
-            if(!suspect.IsCuffed)
+            if(suspect != null && suspect.Exists() && !suspect.IsCuffed)
             {
                 suspect.Task.WanderAround();
             }
 
-            if(!victim.IsCuffed)
+            if(victim != null && victim.Exists() && !victim.IsCuffed)
             {
                 victim.Task.WanderAround();
             }
